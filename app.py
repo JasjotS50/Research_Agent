@@ -122,7 +122,7 @@ SYSTEM_PROMPT = _build_system_prompt()
 #  Configuration validator
 # ─────────────────────────────────────────────────────────────
 _PLACEHOLDERS = {
-    "your_gemini_api_key_here",
+    "your_API_KEY_here",
     "change_this_to_a_random_secret_key",
     "",
 }
@@ -130,11 +130,11 @@ _PLACEHOLDERS = {
 def validate_env_config() -> list[str]:
     """Returns a list of human-readable problem strings. Empty list = all good."""
     issues = []
-    api_key = os.getenv("GEMINI_API_KEY", "")
+    api_key = os.getenv("API_KEY", "")
     if api_key in _PLACEHOLDERS:
         issues.append(
-            "GEMINI_API_KEY is not set. "
-            "Open .env and replace 'your_gemini_api_key_here' with your real key. "
+            "API_KEY is not set. "
+            "Open .env and replace 'your_API_KEY_here' with your real key. "
             "Get one free at: https://aistudio.google.com/app/apikey"
         )
     return issues
@@ -148,7 +148,7 @@ def _classify_exception(exc: Exception) -> str:
     if "api_key" in low or "api key" in low or "invalid" in low and "key" in low:
         return (
             "Authentication failed — invalid API key.\n\n"
-            "**Fix:** Open `.env` and set `GEMINI_API_KEY` to your real key.\n"
+            "**Fix:** Open `.env` and set `API_KEY` to your real key.\n"
             "Get one at: https://aistudio.google.com/app/apikey"
         )
 
@@ -192,10 +192,10 @@ CORS(app)
 #  Gemini client – created once per request (stateless & thread-safe)
 # ─────────────────────────────────────────────────────────────
 def get_gemini_client() -> genai.Client:
-    api_key = os.getenv("GEMINI_API_KEY")
+    api_key = os.getenv("API_KEY")
     if not api_key or api_key in _PLACEHOLDERS:
         raise ValueError(
-            "GEMINI_API_KEY is not configured. "
+            "API_KEY is not configured. "
             "Add it to your .env file. Get one at https://aistudio.google.com/app/apikey"
         )
     return genai.Client(api_key=api_key)
